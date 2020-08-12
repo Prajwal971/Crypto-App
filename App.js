@@ -1,16 +1,72 @@
-import React, { PureComponent } from 'react';
-import store from './src/store';
-import { Provider } from 'react-redux';
-import Currencies from './src/screens/Currencies';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ */
 
-class App extends PureComponent {
-  render() {
-    return (
-      <Provider store={store}>
-        <Currencies />
-      </Provider>
-    )
+import React, { Component } from 'react';
+import {
+  StyleSheet,
+  View,
+  Button,
+  Text
+} from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as countActions from './actions/counts';
+
+class App extends Component {
+  decrementCount() {
+    let { count, actions } = this.props;
+    count--;
+    actions.changeCount(count);
   }
-}
+  incrementCount() {
+    let { count, actions } = this.props;
+    count++;
+    actions.changeCount(count);
+  }
+  render() {
+    const { count } = this.props;
+    return (
+      <View styles={styles.container}>
+        <Button
+          title="increment"
+          onPress={() => this.incrementCount()}
+        />
+        <Text style={styles.textCenter}>{count}</Text>
+        <Button
+          title="decrement"
+          onPress={() => this.decrementCount()}
+        />
+      </View>
+    );
+  }
+};
 
-export default App;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  textCenter:{
+    textAlign :'center'
+  }
+});
+
+const mapStateToProps = state => ({
+  count: state.count.count,
+});
+
+const ActionCreators = Object.assign(
+  {},
+  countActions,
+);
+const mapDispatchToProps = dispatch => ({
+  actions: bindActionCreators(ActionCreators, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
